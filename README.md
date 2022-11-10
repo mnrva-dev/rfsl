@@ -2,7 +2,7 @@
 
 I wrote this package because I wanted an easy logger that would write out to files and move on to
 new files at a certain point so that I could safely store past logs. There are probably alternative
-solutions to this problem, and maybe they are better than writing my open package, but why not, right?
+solutions to this problem, and maybe they are better than writing my own package, but why not, right?
 
 ## Basic Usage
 
@@ -16,7 +16,9 @@ Then you can use the logger with the included functions
 
     ...
     rfsl.Trace("This is a trace log!")
-    rfsl.Warningf("Something bad happend! Variable 'x' is %d.", x)
+    ...
+    rfsl.Warningf("Something bad happened! Variable 'x' is %d.", x)
+    ...
     rfsl.Panic("Oh no!")
     ...
 
