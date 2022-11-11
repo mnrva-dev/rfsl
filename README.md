@@ -8,22 +8,29 @@ solutions to this problem, and maybe they are better than writing my own package
 
 First, call rfsl.Config()
 
-    func main() {
-        rfsl.Config("/var/logs/mylogs.txt", "", 500000000) // 500MB log files
-        ...
+```go
+func main() {
+    rfsl.Config("/var/logs/mylogs.txt", "", 500000000, rfsl.LOG_LVL_INFO) // 500MB log files
+    ...
+```
 
 Then you can use the logger with the included functions
 
-    ...
-    rfsl.Trace("This is a trace log!")
-    ...
-    rfsl.Warningf("Something bad happened! Variable 'x' is %d.", x)
-    ...
-    rfsl.Panic("Oh no!")
-    ...
+```go
+...
+rfsl.Trace("This is a trace log!")
+...
+rfsl.Warningf("Something unexpected happened! Variable 'x' is %d.", x)
+...
+rfsl.Panic("Something very bad happened!")
+...
+rfsl.Fatal("A critical error! The program will shut down.")
+...
+```
 
 mylogs.txt:
 
-    2006-01-02 15:04:05.0000    This is a trace log!
-    2006-01-02 15:04:05.0000 WARNING:   Something bad happened! Variable 'x' is 10.
-    2006-01-02 15:04:05.0000 **PANIC**	Oh no!
+    2022-11-11 00:15:18.3473 TRACE	↦ This is a trace!
+    2022-11-11 00:15:18.3473 WARN	↦ Something unexpected happened! Variable 'x' is 10.
+    2022-11-11 00:15:18.3473 PANIC	↦ Something very bad happened!
+    2022-11-11 00:15:18.3473 FATAL	↦ A critical error! The program will shut down.

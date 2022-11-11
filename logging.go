@@ -16,109 +16,139 @@ import (
 // Please note that the log files should not be assumed to be
 // at most maxsize bytes large, as they can surpass that size before the logger
 // realizes it must move on to a new file.
-func Config(FileName, TimeFormat string, MaxSize int64) error {
-	err := startRful(FileName)
-	rful.size = MaxSize
+//
+// Level is the logging level. Set it with LOG_LVL_ALL, LOG_LVL_DEBUG,
+// LOG_LVL_WARN, etc.
+func Config(FileName, TimeFormat string, MaxSize int64, level LogLevel) error {
+	err := startrfsl(FileName)
+	rfsl.size = MaxSize
+	rfsl.level = level
 	if TimeFormat == "" {
-		rful.timeformat = "2006-01-02 15:04:05.0000"
+		rfsl.timeformat = "2006-01-02 15:04:05.0000"
 	} else {
-		rful.timeformat = TimeFormat
+		rfsl.timeformat = TimeFormat
 	}
 	return err
 }
 
 // Write a trace to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000	This is a trace log example'
+// Format: '2006-01-02 15:04:05.0000 TRACE	↦ This is a trace log example'
 func Trace(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
-}
-
-// Write info to the log file.
-//
-// Format: '2006-01-02 15:04:05.0000 INFO:	This is an info log example'
-func Info(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s INFO:\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
+	if rfsl.level <= LOG_LVL_TRACE {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s TRACE\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
 }
 
 // Write debugging information to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000 DEBUG:	This information is useful for debugging'
+// Format: '2006-01-02 15:04:05.0000 DEBUG	↦ This information is useful for debugging'
 func Debug(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s DEBUG:\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
+	if rfsl.level <= LOG_LVL_DEBUG {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s DEBUG\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
+}
+
+// Write info to the log file.
+//
+// Format: '2006-01-02 15:04:05.0000 INFO	↦ This is an info log example'
+func Info(v ...any) {
+	if rfsl.level <= LOG_LVL_INFO {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s INFO\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
 }
 
 // Write a warning to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000 WARNING:	This information is useful for debugging'
+// Format: '2006-01-02 15:04:05.0000 WARN	↦ This information is useful for debugging'
 func Warning(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s WARNING:\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
+	if rfsl.level <= LOG_LVL_WARN {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s WARN\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
 }
 
 // Write an error to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000 *ERROR:	There is an error here'
+// Format: '2006-01-02 15:04:05.0000 ERROR	↦ There is an error here'
 func Error(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s *ERROR:\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
+	if rfsl.level <= LOG_LVL_ERROR {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s ERROR\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
 }
 
 // Write a panic to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000 **PANIC**	This is a panic!'
+// Format: '2006-01-02 15:04:05.0000 PANIC	↦ This is a panic!'
 func Panic(v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s **PANIC**\t%s\n", t.Format(rful.timeformat), fmt.Sprint(v...))))
+	if rfsl.level <= LOG_LVL_PANIC {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s PANIC\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+	}
 }
 
-// Write a trace to the log file using printf-style formatting.
+// Write a fatal error to the log file.
 //
-// Format: '2006-01-02 15:04:05.0000	This is a trace log example'
+// Format: '2006-01-02 15:04:05.0000 FATAL	↦ This is a fatal error!'
+func Fatal(v ...any) {
+	t := time.Now()
+	rfsl.write([]byte(fmt.Sprintf("%s FATAL\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprint(v...))))
+}
+
+// Trace, with printf style syntax.
 func Tracef(format string, v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
+	if rfsl.level <= LOG_LVL_TRACE {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s TRACE\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
 }
 
-// Write info to the log file using printf-style formatting.
-//
-// Format: '2006-01-02 15:04:05.0000 INFO:	This is an info log example'
-func Infof(format string, v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s INFO:\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
-}
-
-// Write debugging information to the log file using printf-style formatting.
-//
-// Format: '2006-01-02 15:04:05.0000 DEBUG:	This information is useful for debugging'
+// Debug, with printf style syntax.
 func Debugf(format string, v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s DEBUG:\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
+	if rfsl.level <= LOG_LVL_DEBUG {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s DEBUG\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
 }
 
-// Write a warning to the log file using printf-style formatting.
-//
-// Format: '2006-01-02 15:04:05.0000 WARNING:	This information is useful for debugging'
+// Info, with printf style syntax.
+func Infof(format string, v ...any) {
+	if rfsl.level <= LOG_LVL_INFO {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s INFO\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
+}
+
+// Warning, with printf style syntax.
 func Warningf(format string, v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s WARNING:\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
+	if rfsl.level <= LOG_LVL_WARN {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s WARN\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
 }
 
-// Write an error to the log file using printf-style formatting.
-//
-// Format: '2006-01-02 15:04:05.0000 *ERROR:	There is an error here'
+// Error, with printf style syntax.
 func Errorf(format string, v ...any) {
-	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s *ERROR:\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
+	if rfsl.level <= LOG_LVL_ERROR {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s ERROR\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
 }
 
-// Write a panic to the log file using printf-style formatting.
-//
-// Format: '2006-01-02 15:04:05.0000 **PANIC**	This is a panic!'
+// Panic, with printf style syntax.
 func Panicf(format string, v ...any) {
+	if rfsl.level <= LOG_LVL_PANIC {
+		t := time.Now()
+		rfsl.write([]byte(fmt.Sprintf("%s PANIC\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
+	}
+}
+
+// Fatal, with printf style syntax.
+func Fatalf(format string, v ...any) {
 	t := time.Now()
-	rful.write([]byte(fmt.Sprintf("%s **PANIC**\t%s\n", t.Format(rful.timeformat), fmt.Sprintf(format, v...))))
+	rfsl.write([]byte(fmt.Sprintf("%s FATAL\t↦ %s\n", t.Format(rfsl.timeformat), fmt.Sprintf(format, v...))))
 }
