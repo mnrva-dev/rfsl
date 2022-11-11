@@ -1,3 +1,3 @@
-module github.com/mnrva-dev/rfsl/v2
+module github.com/mnrva-dev/rfsl
 
 go 1.19
