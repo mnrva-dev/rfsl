@@ -6,7 +6,11 @@ solutions to this problem, and maybe they are better than writing my own package
 
 ## Basic Usage
 
-First, call rfsl.Config()
+First, install the package
+
+    go get github.com/mnrva-dev/rfsl/v2
+
+Before using the logger, call rfsl.Config()
 
 ```go
 func main() {
