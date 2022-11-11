@@ -12,11 +12,12 @@ type writer struct {
 	fp         *os.File
 	size       int64
 	timeformat string
+	level      LogLevel
 }
 
-var rful *writer
+var rfsl *writer
 
-func startRful(filename string) error {
+func startrfsl(filename string) error {
 	r := &writer{
 		filename: filename,
 	}
@@ -24,7 +25,7 @@ func startRful(filename string) error {
 	if err != nil {
 		return err
 	}
-	rful = r
+	rfsl = r
 	return nil
 }
 
