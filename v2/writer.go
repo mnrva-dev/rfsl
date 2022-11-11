@@ -64,7 +64,7 @@ func (r *writer) move() error {
 	// if file already exists, rename it
 	_, err := os.Stat(r.filename)
 	if err == nil {
-		err = os.Rename(r.filename, r.filename+"."+time.Now().Format("2006-01-02 15-04-05"))
+		err = os.Rename(r.filename, r.filename+"."+time.Now().Format("2006-01-02@15-04-05"))
 		if err != nil {
 			// handle error renaming file
 			return err
